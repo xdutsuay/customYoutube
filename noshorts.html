@@ -1,9 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>YouTube Video Example</title>
+    <title>YouTube Video Search</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   </head>
   <body>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/PtGR3tikcH0" frameborder="0" allowfullscreen></iframe>
+    <h1>Search for YouTube Videos</h1>
+    <input type="text" id="search" placeholder="Enter search query" />
+    <button onclick="searchVideos()">Search</button>
+    <div id="results"></div>
+
+    <script>
+      function searchVideos() {
+        var query = $("#search").val();
+        var apiKey = "YOUR_API_KEY_NOT_MINE";
+        var maxResults = 5;
+
+        $.get(
+          "https://www.googleapis.com/youtube/v3/search", {
+            part: "snippet",
+            type: "video",
+            q: query,
+            key: apiKey,
+            maxResults: maxResults
+          },
+          function (data) {
+            if (data.items.length === 0) {
+              $("#results").html("<p>No videos found</p>");
+            } else {
+              var results = "<ul>";
+              $.each(data.items, function (index, item) {
+                results += "<li><a href='#' onclick='loadVideo(\"" + item.id.videoId + "\")'>" + item.snippet.title + "</a></li>";
+              });
+              results += "</ul>";
+              $("#results").html(results);
+            }
+          }
+        );
+      }
+
+      function loadVideo(videoId) {
+        var iframe = "<iframe width='560' height='315' src='https://www.youtube.com/embed/" + videoId + "' frameborder='0' allowfullscreen></iframe>";
+        $("#results").html(iframe);
+      }
+    </script>
   </body>
 </html>
